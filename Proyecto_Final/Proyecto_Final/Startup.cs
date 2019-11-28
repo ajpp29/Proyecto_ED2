@@ -35,6 +35,16 @@ namespace Proyecto_Final
 
             services.AddSingleton<BookService>();
 
+            ////////////////////////////////////////////////////////////
+            services.Configure<UsersDatabaseSettings>(
+            Configuration.GetSection(nameof(UsersDatabaseSettings)));
+
+            services.AddSingleton<IUsersDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<UsersDatabaseSettings>>().Value);
+
+            services.AddSingleton<UserService>();
+
+            ////////////////////////////////////////////////////////////
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
