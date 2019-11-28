@@ -52,9 +52,21 @@ namespace Proyecto_Final.Controllers
         }
 
         // PUT: api/Users/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        //[HttpPut("{id:length(24)}")]
+        [HttpPut("{userName}")]
+        public IActionResult Update(string userName, User userIn)
         {
+            var user = _userService.Get(userName);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            userIn.Id = user.Id;
+            _userService.Update(userName, userIn);
+
+            return NoContent();
         }
 
         // DELETE: api/ApiWithActions/5

@@ -35,9 +35,9 @@ namespace Proyecto_Final.Services
             return user;
         }
 
-        public void Update(string id, User userIn)
+        public void Update(string username, User userIn)
         {
-            _users.ReplaceOne(user => user.Id == id, userIn);
+            _users.ReplaceOne(user => user.userName == username, userIn);
         }
 
         public void Remove(User userIn)
