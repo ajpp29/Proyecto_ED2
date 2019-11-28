@@ -1,0 +1,34 @@
+﻿@model IEnumerable<MvcLogin.Models.FriendModel>
+
+@{
+    ViewBag.Title = "SeeFriends";
+}
+
+<h2>SeeFriends</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Email)
+        </td>
+        <td>
+            @Html.ActionLink("Chat", "AddChat", "User", new { email = item.Email }, null) |
+            @Html.ActionLink("Delete", "Delete", "User", new { usuario = item.Email }, null) |
+
+
+        </td>
+    </tr>
+}
+
+</table>

@@ -1,0 +1,52 @@
+﻿@model MvcLogin.Models.MensajeModel
+
+@{
+    ViewBag.Title = "NuevoMensaje";
+}
+
+<h2>NuevoMensaje</h2>
+
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <fieldset>
+        <legend>MensajeModel</legend>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Contenido)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Contenido)
+            @Html.ValidationMessageFor(model => model.Contenido)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.emisor)
+        </div>
+        <div class="editor-field">
+            @Html.TextBoxFor(model => model.emisor, new { @readonly = "readonly" })
+            @Html.ValidationMessageFor(model => model.emisor)
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.receptor)
+        </div>
+        <div class="editor-field">
+            @Html.TextBoxFor(model => model.receptor, new { @readonly = "readonly" })
+            @Html.ValidationMessageFor(model => model.receptor)
+        </div>
+
+        <p>
+            <input type="submit" value="Create" />
+        </p>
+    </fieldset>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
