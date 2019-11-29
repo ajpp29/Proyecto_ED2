@@ -24,10 +24,12 @@
         </td>
         <td>
             @Html.ActionLink("Enviar Mensaje", "NuevoMensaje", "User", new { receptor = item.Email, emisor = item.UsuarioLoggeado }, null) |
+            @Html.ActionLink("Enviar Documento", "EnviarArchivo", "User", new { /* id=item.PrimaryKey */ }, null) |
+            @Html.ActionLink("Ver Documentos", "ObtenerArchivo", "User", new { /* id=item.PrimaryKey */ }, null) |
             @Html.ActionLink("Ver Mensajes", "ObtenerMensajes", "User", new {/* id=item.PrimaryKey */ }, null) |
             @Html.ActionLink("Buscar Mensaje", "BuscarMensaje", "User", new { /* id=item.PrimaryKey */ }, null) |
             @Html.ActionLink("Vaciar Chat", "VaciarChat", "User", new { /* id=item.PrimaryKey */ }, null) |
-            @Html.ActionLink("Eliminar Chat", "EliminarChat", "User", new { /* id=item.PrimaryKey */ }, null)
+            @Html.ActionLink("Eliminar Chat", "EliminarChat", "User", new { receptor = item.Email, emisor = item.UsuarioLoggeado }, null)
         </td>
     </tr>
 }

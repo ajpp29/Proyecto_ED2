@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web.Mvc;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
+using Metodos;
 using MvcLogin.Models;
 
 namespace MvcLogin.DBContext
@@ -21,11 +24,70 @@ namespace MvcLogin.DBContext
             return UsuarioLoggeado.mensajes;
 
         }
+        public void EliminarChat(string user)
+        {
+            for (int i = 0; i < UsuarioLoggeado.friends.Count(); i++)
+            {
+                if (UsuarioLoggeado.chats[i].Email == user)
+                {
+                    UsuarioLoggeado.chats.Remove((UsuarioLoggeado.friends[i]));
+                }
 
+            }
+
+        }
+
+
+        public void GenerarArhivoComprimido(HttpPostedFileBase File, string fullname, string path, string path2)
+        {
+            string FULLNAME = path + fullname;
+            const int bufferLength = 100;
+            List<int> bytedecompress = new List<int>();
+            StringBuilder builder = new StringBuilder();
+
+            var buffer = new byte[bufferLength];
+            using (var file = new FileStream(FULLNAME, FileMode.Open))
+            {
+                using (var reader = new BinaryReader(file))
+                {
+                    while (reader.BaseStream.Position != reader.BaseStream.Length)
+                    {
+                        buffer = reader.ReadBytes(bufferLength);
+                        foreach (var item in buffer)
+                        {
+                            builder.Append(((char)item).ToString());
+                        }
+
+                        //Console.ReadKey();
+                    }
+
+                }
+
+            }
+
+            byte[] filedata = System.IO.File.ReadAllBytes(FULLNAME);
+            Compresion algoritmo = new Compresion();
+            List<int> compreso = algoritmo.Compresionn(builder.ToString());
+
+            List<char> bytecompress = new List<char>();
+
+            foreach (int numero in compreso)
+            {
+                bytecompress.Add((char)numero);
+            }
+
+            ////////
+            var ruta = path2 + fullname.Split('.')[0] + ".lzw";
+            using (StreamWriter outputFile = new StreamWriter(ruta))
+            {
+                foreach (char caracter in bytecompress)
+                {
+                    outputFile.Write(caracter.ToString());
+                }
+            }
+        }
         public void eliminarAmigo(string user)
         {
-            FriendModel usEliminar = new FriendModel();
-            usEliminar.Email = user;
             for (int i = 0; i < UsuarioLoggeado.friends.Count(); i++)
             {
                 if (UsuarioLoggeado.friends[i].Email == user)
@@ -65,7 +127,6 @@ namespace MvcLogin.DBContext
         {
             Usuarios.Add(user);
         }
-        private static FileInfo fileInfo = default(FileInfo);
 
         public int IdActual { get; set; }
 
@@ -76,15 +137,6 @@ namespace MvcLogin.DBContext
         public List<Models.UserModel> ObtenerLista()
         {
             return Usuarios;
-        }
-        public void AsignarRuta(FileInfo file)
-        {
-            fileInfo = file;
-        }
-
-        public FileInfo ObtenerRuta()
-        {
-            return fileInfo;
         }
 
         public static DefaultConnection getInstance

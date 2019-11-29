@@ -235,6 +235,7 @@
     <Content Include="Views\User\ObtenerChats.cshtml" />
     <Content Include="Views\User\NuevoMensaje.cshtml" />
     <Content Include="Views\User\ObtenerMensajes.cshtml" />
+    <Content Include="Views\User\EnviarArchivo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Metodos\Metodos.csproj">
@@ -247,6 +248,10 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DownloadedFiles\" />
+    <Folder Include="UploadedFiles\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
