@@ -8,7 +8,7 @@ namespace Metodos
 {
     public class Compresion
     {
-        public List<int> Comprimir(string Descomprimido)
+        public List<int> Compresionn(string Descomprimido)
         {
             // Crando Diccionario
             List<int> indices = new List<int>();

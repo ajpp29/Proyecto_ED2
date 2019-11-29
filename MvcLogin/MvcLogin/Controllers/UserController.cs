@@ -9,6 +9,8 @@ using MvcLogin.DBContext;
 using MvcLogin.Models;
 using Newtonsoft.Json;
 using Metodos;
+using System.IO;
+using System.Text;
 
 namespace MvcLogin.Controllers
 {
@@ -17,6 +19,48 @@ namespace MvcLogin.Controllers
     {  
         DefaultConnection db = DefaultConnection.getInstance;
         UserModel Usuario = new UserModel();
+
+        public ActionResult EliminarChat(string receptor, string emisor)
+        {
+            db.EliminarChat(receptor);
+            return View("Index");
+        }
+
+        //ENVIAR ARCHIVO
+        [HttpGet]
+        public ActionResult EnviarArchivo()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult EnviarArchivo(HttpPostedFileBase File)
+        {
+            string filePath = string.Empty;
+            if (File != null)
+            {
+                Compresion algoritmo = new Compresion();
+                string path = Server.MapPath("~/UploadedFiles/");
+                var ruta2= Server.MapPath("~/DownloadedFiles/");
+                filePath = path + Path.GetFileName(File.FileName);
+                string extension = Path.GetExtension(File.FileName);
+                File.SaveAs(filePath);
+                ViewBag.Message = "Archivo Cargado";
+
+                FileInfo fileInfo = new FileInfo(filePath);
+
+                string nombre_original = fileInfo.Name;
+                long tamanio_original = fileInfo.Length;
+                db.GenerarArhivoComprimido(File, File.FileName,path,ruta2);
+            }
+
+            return View();
+        }
+
+
+
+
+
         [HttpGet]
         public ActionResult Index()
         {
@@ -54,6 +98,10 @@ namespace MvcLogin.Controllers
             db.eliminarAmigo(usuario);
             return View("Index");
         }
+
+
+
+
         public ActionResult ObtenerChats()
         {
             return View(db.ObtenerChats());
@@ -88,6 +136,9 @@ namespace MvcLogin.Controllers
             }
             return View("Index");
         }
+
+
+
         MensajeModel nuevo = new MensajeModel();
         public ActionResult NuevoMensaje(string emisor, string receptor)
         {
@@ -151,38 +202,38 @@ namespace MvcLogin.Controllers
         [HttpPost]
         public ActionResult Registration(Models.UserModel user)
         {
-            User newuser = new User();
-            newuser.userName = user.Email;
-            newuser.Password = user.Password;
-            using (var client = new HttpClient())
+            //User newuser = new User();
+            //newuser.userName = user.Email;
+            //newuser.Password = user.Password;
+            //using (var client = new HttpClient())
+            //{
+            //    client.BaseAddress = new Uri("https://localhost:44300/api/users");
+
+
+            //    //HTTP POST
+            //    var postTask = client.PostAsJsonAsync<User>("Users", newuser);
+            //    postTask.Wait();
+
+            //    var result = postTask.Result;
+            //    if (result.IsSuccessStatusCode)
+            //    {
+            //        return RedirectToAction("Index");
+            //    }
+            //}
+
+            //ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
+
+            if (ModelState.IsValid)
             {
-                client.BaseAddress = new Uri("https://localhost:44300/api/users");
-
-
-                //HTTP POST
-                var postTask = client.PostAsJsonAsync<User>("Users", newuser);
-                postTask.Wait();
-
-                var result = postTask.Result;
-                if (result.IsSuccessStatusCode)
-                {
-                    return RedirectToAction("Index");
-                }
+                Usuario.Email = user.Email;
+                Usuario.Password = user.Password;
+                db.AddUsuario(Usuario);
+                return RedirectToAction("Index", "Home");
             }
-
-            ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
-
-            //if (ModelState.IsValid)
-            //{
-            //    Usuario.Email = user.Email;
-            //    Usuario.Password = user.Password;
-            //    db.AddUsuario(Usuario);
-            //    return RedirectToAction("Index", "Home");
-            //}
-            //else
-            //{
-            //    ModelState.AddModelError("", "Login data is incorrect."); //adicionar mensaje de error al modelo 
-            //}
+            else
+            {
+                ModelState.AddModelError("", "Login data is incorrect."); //adicionar mensaje de error al modelo 
+            }
             return View();
         }
 
@@ -196,36 +247,36 @@ namespace MvcLogin.Controllers
         private bool Isvalid(string Email, string password)
         {
             bool Isvalid = false; 
-            IEnumerable<Models.User> UsuariosDB = new List<Models.User>();
-            //archivos2 = db.ObtenerLista();
+            IEnumerable<Models.UserModel> UsuariosDB = new List<Models.UserModel>();
+            UsuariosDB = db.ObtenerLista();
 
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri("https://localhost:44300/api/users");
-                //HTTP GET
-                var responseTask = client.GetAsync("Users"); 
-                responseTask.Wait();
+            //using (var client = new HttpClient())
+            //{
+            //    client.BaseAddress = new Uri("https://localhost:44300/api/users");
+            //    //HTTP GET
+            //    var responseTask = client.GetAsync("Users"); 
+            //    responseTask.Wait();
 
-                var result = responseTask.Result;
-                if (result.IsSuccessStatusCode)
-                {
-                    var readTask = result.Content.ReadAsStringAsync();
-                    readTask.Wait();
-                    UsuariosDB = JsonConvert.DeserializeObject<IList<User>>(readTask.Result);
-                }
-                else
-                {
-                    UsuariosDB = Enumerable.Empty<User>();
+            //    var result = responseTask.Result;
+            //    if (result.IsSuccessStatusCode)
+            //    {
+            //        var readTask = result.Content.ReadAsStringAsync();
+            //        readTask.Wait();
+            //        UsuariosDB = JsonConvert.DeserializeObject<IList<User>>(readTask.Result);
+            //    }
+            //    else
+            //    {
+            //        UsuariosDB = Enumerable.Empty<User>();
 
-                    ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
-                }
-            }
+            //        ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+            //    }
+            //}
 
-            IEnumerable<Models.User> Query = from prod in UsuariosDB
-                                                  where prod.userName == Email
+            IEnumerable<Models.UserModel> Query = from prod in UsuariosDB
+                                                  where prod.Email == Email
                                                   select prod;
 
-            foreach (Models.User item in Query)
+            foreach (Models.UserModel item in Query)
             {
                 if (item.Password == password)  //Verificar password del usuario
                 {

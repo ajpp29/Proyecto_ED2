@@ -1,0 +1,19 @@
+﻿@{
+    ViewBag.Title = "EnviarArchivo";
+}
+
+<h2>SubirArchivo</h2>
+
+@using (Html.BeginForm("EnviarArchivo",
+                        "User",
+                        FormMethod.Post,
+                        new { enctype = "multipart/form-data" }))
+
+{
+    @Html.AntiForgeryToken()
+    <label for="file">Cargar Archivo:</label>
+    <input type="file" name="file" id="file" /><br><br>
+    <input type="submit" value="Cargar Archivo" />
+    <br><br>
+    @ViewBag.Message
+}
