@@ -28,7 +28,7 @@ namespace MvcLogin.DBContext
         {
             for (int i = 0; i < UsuarioLoggeado.friends.Count(); i++)
             {
-                if (UsuarioLoggeado.chats[i].Email == user)
+                if (UsuarioLoggeado.chats[i].userName == user)
                 {
                     UsuarioLoggeado.chats.Remove((UsuarioLoggeado.friends[i]));
                 }
@@ -90,7 +90,7 @@ namespace MvcLogin.DBContext
         {
             for (int i = 0; i < UsuarioLoggeado.friends.Count(); i++)
             {
-                if (UsuarioLoggeado.friends[i].Email == user)
+                if (UsuarioLoggeado.friends[i].userName == user)
                 {
                     UsuarioLoggeado.friends.Remove((UsuarioLoggeado.friends[i]));
                 }

@@ -165,16 +165,61 @@ namespace MvcLogin.Controllers
 
         public ActionResult SeeFriends()
         {
-            List<Models.FriendModel> archivos3 = new List<Models.FriendModel>();
-            archivos3 = db.ObtenerFriends();
-            return View(archivos3);
+            IEnumerable<Models.FriendModel> AmigosDB = new List<Models.FriendModel>();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://localhost:44300/api/users");
+                //HTTP GET
+                var responseTask = client.GetAsync("Friends");
+                responseTask.Wait();
+
+                var result = responseTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var readTask = result.Content.ReadAsStringAsync();
+                    readTask.Wait();
+                    AmigosDB = JsonConvert.DeserializeObject<IList<FriendModel>>(readTask.Result);
+                }
+                else
+                {
+                    AmigosDB = Enumerable.Empty<FriendModel>();
+
+                    ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+                }
+            }
+            return View(AmigosDB);
         }
         [HttpPost]
         public ActionResult SeeFriends(Models.FriendModel us)
         {
-            List<Models.FriendModel> archivos3 = new List<Models.FriendModel>();
-            archivos3 = db.ObtenerFriends();
-            return View(archivos3);
+            //conexion api
+            IEnumerable<Models.FriendModel> AmigosDB = new List<Models.FriendModel>();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://localhost:44300/api/users");
+                //HTTP GET
+                var responseTask = client.GetAsync("Friends");
+                responseTask.Wait();
+
+                var result = responseTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var readTask = result.Content.ReadAsStringAsync();
+                    readTask.Wait();
+                    AmigosDB = JsonConvert.DeserializeObject<IList<FriendModel>>(readTask.Result);
+                }
+                else
+                {
+                    AmigosDB = Enumerable.Empty<FriendModel>();
+
+                    ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+                }
+            }
+            //termina conexion api
+            //Conexion Local con listas locales
+            //List<Models.FriendModel> archivos3 = new List<Models.FriendModel>();
+            //archivos3 = db.ObtenerFriends();
+            return View(AmigosDB);
         }
 
         public ActionResult AddFriend()
@@ -184,15 +229,34 @@ namespace MvcLogin.Controllers
         [HttpPost]
         public ActionResult AddFriend(Models.FriendModel us)
          {
-            List<Models.UserModel> archivos2 = new List<Models.UserModel>();
-            archivos2 = db.ObtenerLista();
-            for (int i = 0; i < archivos2.Count; i++)
-            {               
-                    if (archivos2[i].Email == us.Email)
-                    {
-                        db.AddFriend(us);
-                    }
+            us.userFriend = db.UsuarioLoggeado.Email;
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://localhost:44300/api/Friends");
+
+
+                //HTTP POST
+                var postTask = client.PostAsJsonAsync<FriendModel>("Friends", us);
+                postTask.Wait();
+
+                var result = postTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
             }
+
+            ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
+
+            //List<Models.UserModel> archivos2 = new List<Models.UserModel>();
+            //archivos2 = db.ObtenerLista();
+            //for (int i = 0; i < archivos2.Count; i++)
+            //{               
+            //        if (archivos2[i].Email == us.userName)
+            //        {
+            //            db.AddFriend(us);
+            //        }
+            //}
             return View("Index");
         }
         public ActionResult Registration()

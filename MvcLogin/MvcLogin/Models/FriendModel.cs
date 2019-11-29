@@ -7,9 +7,10 @@ namespace MvcLogin.Models
 {
     public class FriendModel
     {
-        public string Email { get; set; }
+        public string userName { get; set; }
 
-        public string UsuarioLoggeado { get; set; }
+        public string userFriend { get; set; }
+
 
     }
 }
