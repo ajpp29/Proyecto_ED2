@@ -55,6 +55,16 @@ namespace Proyecto_Final
             services.AddSingleton<FriendService>();
 
             ////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////
+            services.Configure<MessagesDatabaseSettings>(
+            Configuration.GetSection(nameof(MessagesDatabaseSettings)));
+
+            services.AddSingleton<IMessagesDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<MessagesDatabaseSettings>>().Value);
+
+            services.AddSingleton<FriendService>();
+
+            ////////////////////////////////////////////////////////////
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
