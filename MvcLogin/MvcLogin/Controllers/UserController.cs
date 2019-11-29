@@ -202,26 +202,26 @@ namespace MvcLogin.Controllers
         [HttpPost]
         public ActionResult Registration(Models.UserModel user)
         {
-            //User newuser = new User();
-            //newuser.userName = user.Email;
-            //newuser.Password = user.Password;
-            //using (var client = new HttpClient())
-            //{
-            //    client.BaseAddress = new Uri("https://localhost:44300/api/users");
+            User newuser = new User();
+            newuser.userName = user.Email;
+            newuser.Password = user.Password;
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://localhost:44300/api/users");
 
 
-            //    //HTTP POST
-            //    var postTask = client.PostAsJsonAsync<User>("Users", newuser);
-            //    postTask.Wait();
+                //HTTP POST
+                var postTask = client.PostAsJsonAsync<User>("Users", newuser);
+                postTask.Wait();
 
-            //    var result = postTask.Result;
-            //    if (result.IsSuccessStatusCode)
-            //    {
-            //        return RedirectToAction("Index");
-            //    }
-            //}
+                var result = postTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
 
-            //ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
+            ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
 
             if (ModelState.IsValid)
             {
@@ -247,36 +247,36 @@ namespace MvcLogin.Controllers
         private bool Isvalid(string Email, string password)
         {
             bool Isvalid = false; 
-            IEnumerable<Models.UserModel> UsuariosDB = new List<Models.UserModel>();
-            UsuariosDB = db.ObtenerLista();
+            IEnumerable<Models.User> UsuariosDB = new List<Models.User>();
+            //UsuariosDB = db.ObtenerLista();
 
-            //using (var client = new HttpClient())
-            //{
-            //    client.BaseAddress = new Uri("https://localhost:44300/api/users");
-            //    //HTTP GET
-            //    var responseTask = client.GetAsync("Users"); 
-            //    responseTask.Wait();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://localhost:44300/api/users");
+                //HTTP GET
+                var responseTask = client.GetAsync("Users");
+                responseTask.Wait();
 
-            //    var result = responseTask.Result;
-            //    if (result.IsSuccessStatusCode)
-            //    {
-            //        var readTask = result.Content.ReadAsStringAsync();
-            //        readTask.Wait();
-            //        UsuariosDB = JsonConvert.DeserializeObject<IList<User>>(readTask.Result);
-            //    }
-            //    else
-            //    {
-            //        UsuariosDB = Enumerable.Empty<User>();
+                var result = responseTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var readTask = result.Content.ReadAsStringAsync();
+                    readTask.Wait();
+                    UsuariosDB = JsonConvert.DeserializeObject<IList<User>>(readTask.Result);
+                }
+                else
+                {
+                    UsuariosDB = Enumerable.Empty<User>();
 
-            //        ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
-            //    }
-            //}
+                    ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+                }
+            }
 
-            IEnumerable<Models.UserModel> Query = from prod in UsuariosDB
-                                                  where prod.Email == Email
+            IEnumerable<Models.User> Query = from prod in UsuariosDB
+                                                  where prod.userName == Email
                                                   select prod;
 
-            foreach (Models.UserModel item in Query)
+            foreach (Models.User item in Query)
             {
                 if (item.Password == password)  //Verificar password del usuario
                 {
