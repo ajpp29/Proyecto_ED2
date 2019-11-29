@@ -117,7 +117,7 @@ namespace MvcLogin.Controllers
             {
                 for (int i = 0; i < archivos4.Count; i++)
             {
-                if (archivos4[i].Email == email)
+                if (archivos4[i].userName == email)
                 {
                     bandera = true; 
                 }
@@ -126,9 +126,9 @@ namespace MvcLogin.Controllers
             {             
                 for (int i = 0; i < archivos3.Count; i++)
                 {
-                if(archivos3[i].Email == email)
+                if(archivos3[i].userName == email)
                 {
-                    archivos3[i].UsuarioLoggeado = db.UsuarioLoggeado.Email;
+                    archivos3[i].userFriend = db.UsuarioLoggeado.Email;
                     db.AddChat(archivos3[i]);
                 }
                 }
