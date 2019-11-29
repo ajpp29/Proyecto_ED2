@@ -169,14 +169,15 @@ namespace MvcLogin.Controllers
 
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:58142/api/Friends/"+db.UsuarioLoggeado.Email);
+                client.BaseAddress = new Uri("https://localhost:44300/api/Friends/");
                 //HTTP GET
-                var responseTask = client.GetAsync("Friends");
+                var responseTask = client.GetAsync(db.UsuarioLoggeado.Email);
                 responseTask.Wait();
 
                 var result = responseTask.Result;
                 if (result.IsSuccessStatusCode)
                 {
+                    UsuariosDB = JsonConvert.DeserializeObject<IList<FriendModel>>(result.Content.ReadAsStringAsync().Result);
                     var readTask = result.Content.ReadAsStringAsync();
                     readTask.Wait();
                     UsuariosDB = JsonConvert.DeserializeObject<IList<FriendModel>>(readTask.Result);
@@ -199,10 +200,11 @@ namespace MvcLogin.Controllers
         [HttpPost]
         public ActionResult AddFriend(Models.FriendModel us)
          {
-            us.userFriend = db.UsuarioLoggeado.Email;
+            us.userFriend = us.userName;
+            us.userName = db.UsuarioLoggeado.Email;
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:58142/api/Friends");
+                client.BaseAddress = new Uri("https://localhost:44300/api/Friends");
 
 
                 //HTTP POST
@@ -241,7 +243,7 @@ namespace MvcLogin.Controllers
             newuser.Password = user.Password;
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:58142/api/users");
+                client.BaseAddress = new Uri("https://localhost:44300/api/users");
 
 
                 //HTTP POST
@@ -280,15 +282,16 @@ namespace MvcLogin.Controllers
 
         private bool Isvalid(string Email, string password)
         {
-            bool Isvalid = false; 
+            bool Isvalid = false;
             IEnumerable<Models.User> UsuariosDB = new List<Models.User>();
-            //UsuariosDB = db.ObtenerLista();
+            //archivos2 = db.ObtenerLista();
 
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("http://localhost:58142/api/users");
+                client.BaseAddress = new Uri("https://localhost:44300/api/users");
                 //HTTP GET
                 var responseTask = client.GetAsync("Users");
+                //var responseTask1 = client.GetAsync("Users");
                 responseTask.Wait();
 
                 var result = responseTask.Result;
@@ -307,8 +310,8 @@ namespace MvcLogin.Controllers
             }
 
             IEnumerable<Models.User> Query = from prod in UsuariosDB
-                                                  where prod.userName == Email
-                                                  select prod;
+                                             where prod.userName == Email
+                                             select prod;
 
             foreach (Models.User item in Query)
             {

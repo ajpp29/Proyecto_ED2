@@ -57,8 +57,6 @@ namespace MvcLogin.DBContext
                         {
                             builder.Append(((char)item).ToString());
                         }
-
-                        //Console.ReadKey();
                     }
 
                 }
@@ -82,6 +80,7 @@ namespace MvcLogin.DBContext
             {
                 foreach (char caracter in bytecompress)
                 {
+
                     outputFile.Write(caracter.ToString());
                 }
             }
