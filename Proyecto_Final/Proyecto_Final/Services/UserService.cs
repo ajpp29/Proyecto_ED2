@@ -42,12 +42,12 @@ namespace Proyecto_Final.Services
 
         public void Remove(User userIn)
         {
-            _users.DeleteOne(user => user.Id == userIn.Id);
+            _users.DeleteOne(user => user.userName == userIn.userName);
         }
 
-        public void Remove(string id)
+        public void Remove(string username)
         {
-            _users.DeleteOne(user => user.Id == id);
+            _users.DeleteOne(user => user.userName == username);
         }
     }
 }

@@ -70,9 +70,20 @@ namespace Proyecto_Final.Controllers
         }
 
         // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        //[HttpDelete("{id:length(24)}")]
+        [HttpDelete("{userName}")]
+        public IActionResult Delete(string userName)
         {
+            var user = _userService.Get(userName);
+
+            if(user == null)
+            {
+                return NotFound();
+            }
+
+            _userService.Remove(user.userName);
+
+            return NoContent();
         }
     }
 }
