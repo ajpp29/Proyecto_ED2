@@ -231,11 +231,11 @@
     <Content Include="Views\User\LogOut.cshtml" />
     <Content Include="Views\User\Registration.cshtml" />
     <Content Include="Views\User\AddFriend.cshtml" />
-    <Content Include="Views\User\SeeFriends.cshtml" />
     <Content Include="Views\User\ObtenerChats.cshtml" />
     <Content Include="Views\User\NuevoMensaje.cshtml" />
     <Content Include="Views\User\ObtenerMensajes.cshtml" />
     <Content Include="Views\User\EnviarArchivo.cshtml" />
+    <Content Include="Views\User\SeeFriends.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Metodos\Metodos.csproj">

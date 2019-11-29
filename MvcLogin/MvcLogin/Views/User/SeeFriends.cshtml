@@ -12,7 +12,10 @@
 <table>
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Email)
+            @Html.DisplayNameFor(model => model.userName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.userFriend)
         </th>
         <th></th>
     </tr>
@@ -20,13 +23,15 @@
 @foreach (var item in Model) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.Email)
+            @Html.DisplayFor(modelItem => item.userName)
         </td>
         <td>
-            @Html.ActionLink("Chat", "AddChat", "User", new { email = item.Email }, null) |
-            @Html.ActionLink("Delete", "Delete", "User", new { usuario = item.Email }, null) |
-
-
+            @Html.DisplayFor(modelItem => item.userFriend)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
+            @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
         </td>
     </tr>
 }

@@ -165,10 +165,11 @@ namespace MvcLogin.Controllers
 
         public ActionResult SeeFriends()
         {
-            IEnumerable<Models.FriendModel> AmigosDB = new List<Models.FriendModel>();
+            IEnumerable<Models.FriendModel> UsuariosDB = new List<Models.FriendModel>();
+
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("https://localhost:44300/api/users");
+                client.BaseAddress = new Uri("http://localhost:58142/api/Friends/"+db.UsuarioLoggeado.Email);
                 //HTTP GET
                 var responseTask = client.GetAsync("Friends");
                 responseTask.Wait();
@@ -178,49 +179,18 @@ namespace MvcLogin.Controllers
                 {
                     var readTask = result.Content.ReadAsStringAsync();
                     readTask.Wait();
-                    AmigosDB = JsonConvert.DeserializeObject<IList<FriendModel>>(readTask.Result);
+                    UsuariosDB = JsonConvert.DeserializeObject<IList<FriendModel>>(readTask.Result);
                 }
                 else
                 {
-                    AmigosDB = Enumerable.Empty<FriendModel>();
+                    UsuariosDB = Enumerable.Empty<FriendModel>();
 
                     ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
                 }
             }
-            return View(AmigosDB);
+            return View(UsuariosDB);
         }
-        [HttpPost]
-        public ActionResult SeeFriends(Models.FriendModel us)
-        {
-            //conexion api
-            IEnumerable<Models.FriendModel> AmigosDB = new List<Models.FriendModel>();
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri("https://localhost:44300/api/users");
-                //HTTP GET
-                var responseTask = client.GetAsync("Friends");
-                responseTask.Wait();
-
-                var result = responseTask.Result;
-                if (result.IsSuccessStatusCode)
-                {
-                    var readTask = result.Content.ReadAsStringAsync();
-                    readTask.Wait();
-                    AmigosDB = JsonConvert.DeserializeObject<IList<FriendModel>>(readTask.Result);
-                }
-                else
-                {
-                    AmigosDB = Enumerable.Empty<FriendModel>();
-
-                    ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
-                }
-            }
-            //termina conexion api
-            //Conexion Local con listas locales
-            //List<Models.FriendModel> archivos3 = new List<Models.FriendModel>();
-            //archivos3 = db.ObtenerFriends();
-            return View(AmigosDB);
-        }
+       
 
         public ActionResult AddFriend()
         {
@@ -232,7 +202,7 @@ namespace MvcLogin.Controllers
             us.userFriend = db.UsuarioLoggeado.Email;
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("https://localhost:44300/api/Friends");
+                client.BaseAddress = new Uri("http://localhost:58142/api/Friends");
 
 
                 //HTTP POST
@@ -271,7 +241,7 @@ namespace MvcLogin.Controllers
             newuser.Password = user.Password;
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("https://localhost:44300/api/users");
+                client.BaseAddress = new Uri("http://localhost:58142/api/users");
 
 
                 //HTTP POST
@@ -316,7 +286,7 @@ namespace MvcLogin.Controllers
 
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("https://localhost:44300/api/users");
+                client.BaseAddress = new Uri("http://localhost:58142/api/users");
                 //HTTP GET
                 var responseTask = client.GetAsync("Users");
                 responseTask.Wait();
