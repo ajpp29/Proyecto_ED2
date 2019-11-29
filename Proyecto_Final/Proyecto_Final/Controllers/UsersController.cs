@@ -32,7 +32,7 @@ namespace Proyecto_Final.Controllers
 
         // GET: api/Users/5
         //[HttpGet("{id:length(24)}", Name = "GetUser")]
-        [HttpGet("{UserName}", Name = "GetUser")]
+        [HttpGet("{userName}", Name = "GetUser")]
         public ActionResult<User> Get(string userName)
         {
             var user = _userService.Get(userName);

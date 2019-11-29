@@ -45,6 +45,16 @@ namespace Proyecto_Final
             services.AddSingleton<UserService>();
 
             ////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////
+            services.Configure<FriendsDatabaseSettings>(
+            Configuration.GetSection(nameof(FriendsDatabaseSettings)));
+
+            services.AddSingleton<IFriendsDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<FriendsDatabaseSettings>>().Value);
+
+            services.AddSingleton<FriendService>();
+
+            ////////////////////////////////////////////////////////////
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
