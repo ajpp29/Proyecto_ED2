@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using MvcLogin.DBContext;
 using MvcLogin.Models;
+using Newtonsoft.Json;
 
 namespace MvcLogin.Controllers
 {
@@ -147,17 +149,38 @@ namespace MvcLogin.Controllers
         [HttpPost]
         public ActionResult Registration(Models.UserModel user)
         {
-            if (ModelState.IsValid)
+            User newuser = new User();
+            newuser.userName = user.Email;
+            newuser.Password = user.Password;
+            using (var client = new HttpClient())
             {
-                Usuario.Email = user.Email;
-                Usuario.Password = user.Password;
-                db.AddUsuario(Usuario);
-                return RedirectToAction("Index", "Home");
+                client.BaseAddress = new Uri("https://localhost:44300/api/users");
+
+
+                //HTTP POST
+                var postTask = client.PostAsJsonAsync<User>("Users", newuser);
+                postTask.Wait();
+
+                var result = postTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
             }
-            else
-            {
-                ModelState.AddModelError("", "Login data is incorrect."); //adicionar mensaje de error al modelo 
-            }
+
+            ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
+
+            //if (ModelState.IsValid)
+            //{
+            //    Usuario.Email = user.Email;
+            //    Usuario.Password = user.Password;
+            //    db.AddUsuario(Usuario);
+            //    return RedirectToAction("Index", "Home");
+            //}
+            //else
+            //{
+            //    ModelState.AddModelError("", "Login data is incorrect."); //adicionar mensaje de error al modelo 
+            //}
             return View();
         }
 
@@ -170,15 +193,37 @@ namespace MvcLogin.Controllers
 
         private bool Isvalid(string Email, string password)
         {
-            bool Isvalid = false; ;
-            List<Models.UserModel> archivos2 = new List<Models.UserModel>();
-            archivos2 = db.ObtenerLista();
+            bool Isvalid = false; 
+            IEnumerable<Models.User> UsuariosDB = new List<Models.User>();
+            //archivos2 = db.ObtenerLista();
 
-            IEnumerable<Models.UserModel> Query = from prod in archivos2
-                                                  where prod.Email == Email
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("https://localhost:44300/api/users");
+                //HTTP GET
+                var responseTask = client.GetAsync("Users"); 
+                responseTask.Wait();
+
+                var result = responseTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var readTask = result.Content.ReadAsStringAsync();
+                    readTask.Wait();
+                    UsuariosDB = JsonConvert.DeserializeObject<IList<User>>(readTask.Result);
+                }
+                else
+                {
+                    UsuariosDB = Enumerable.Empty<User>();
+
+                    ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+                }
+            }
+
+            IEnumerable<Models.User> Query = from prod in UsuariosDB
+                                                  where prod.userName == Email
                                                   select prod;
 
-            foreach (Models.UserModel item in Query)
+            foreach (Models.User item in Query)
             {
                 if (item.Password == password)  //Verificar password del usuario
                 {
