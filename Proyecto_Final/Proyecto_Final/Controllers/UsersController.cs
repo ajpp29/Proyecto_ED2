@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Proyecto_Final.Models;
 using Proyecto_Final.Services;
+using Metodos;
 
 namespace Proyecto_Final.Controllers
 {
@@ -13,7 +14,9 @@ namespace Proyecto_Final.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+        
         private readonly UserService _userService;
+        Cifrado cifrado = new Cifrado(0);
 
         public UsersController(UserService userService)
         {

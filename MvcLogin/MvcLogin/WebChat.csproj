@@ -236,7 +236,12 @@
     <Content Include="Views\User\NuevoMensaje.cshtml" />
     <Content Include="Views\User\ObtenerMensajes.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Metodos\Metodos.csproj">
+      <Project>{b0ec940a-8876-41e6-9483-08d775bfb745}</Project>
+      <Name>Metodos</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>

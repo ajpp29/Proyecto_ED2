@@ -8,11 +8,13 @@ using System.Web.Security;
 using MvcLogin.DBContext;
 using MvcLogin.Models;
 using Newtonsoft.Json;
+using Metodos;
 
 namespace MvcLogin.Controllers
 {
+
     public class UserController : Controller
-    {
+    {  
         DefaultConnection db = DefaultConnection.getInstance;
         UserModel Usuario = new UserModel();
         [HttpGet]
