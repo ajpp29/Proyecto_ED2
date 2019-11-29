@@ -37,7 +37,10 @@ namespace Proyecto_Final.Services
 
         public List<Message> Get(string username, Friend friendIn)
         {
-            return _messages.Find(message => message.userSender == friendIn.userName && message.userRecipient == friendIn.userFriend && message.Original == true).ToList();
+            var mensajeEmisor =  _messages.Find(message => message.userSender == friendIn.userName && message.userRecipient == friendIn.userFriend && message.Original == true).ToList();
+            var mensajeReceptor =  _messages.Find(message => message.userSender == friendIn.userFriend && message.userRecipient == friendIn.userName && message.Original == false).ToList();
+            var mensajes = mensajeEmisor.Union(mensajeReceptor).ToList();
+            return mensajes;
         }
 
         public void Remove(Friend friendIn)

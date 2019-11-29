@@ -62,7 +62,7 @@ namespace Proyecto_Final
             services.AddSingleton<IMessagesDatabaseSettings>(sp =>
                 sp.GetRequiredService<IOptions<MessagesDatabaseSettings>>().Value);
 
-            services.AddSingleton<FriendService>();
+            services.AddSingleton<MessageService>();
 
             ////////////////////////////////////////////////////////////
             services.AddMvc()

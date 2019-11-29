@@ -204,6 +204,7 @@ namespace MvcLogin.Controllers
                 client.BaseAddress = new Uri("https://localhost:44300/api/users");
                 //HTTP GET
                 var responseTask = client.GetAsync("Users"); 
+                //var responseTask1 = client.GetAsync("Users");
                 responseTask.Wait();
 
                 var result = responseTask.Result;
