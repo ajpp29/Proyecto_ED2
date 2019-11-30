@@ -27,7 +27,14 @@ namespace Proyecto_Final.Controllers
         [HttpGet]
         public ActionResult<List<User>> Get()
         {
-            return _userService.Get();
+            var usersList = _userService.Get();
+
+            foreach (var item in usersList)
+            {
+                item.Password = cifrado.LeerArchivo(item.Password, false);
+            }
+
+            return usersList;
         }
 
         // GET: api/Users/5
@@ -42,6 +49,8 @@ namespace Proyecto_Final.Controllers
                 return NotFound();
             }
 
+            user.Password = cifrado.LeerArchivo(user.Password, false);
+
             return user;
         }
 
@@ -49,6 +58,10 @@ namespace Proyecto_Final.Controllers
         [HttpPost]
         public ActionResult<User> Create(User user)
         {
+            ///////RECIEN AÑADIDO
+            user.Password = cifrado.LeerArchivo(user.Password, true);
+            //var descifrar = cifrado.LeerArchivo(cifrar, false);
+            /////////////////////
             _userService.Create(user);
 
             return CreatedAtRoute("GetUser", new { userName = user.userName.ToString() }, user);
