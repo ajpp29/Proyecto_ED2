@@ -42,8 +42,8 @@ namespace Proyecto_Final.Controllers
             _chatService.Create(chat);
 
             Chat copia = new Chat();
-            copia.userSender = chat.userSender;
-            copia.userRecipient = chat.userRecipient;
+            copia.userSender = chat.userRecipient;
+            copia.userRecipient = chat.userSender;
 
             _chatService.Create(copia);
 
@@ -60,6 +60,11 @@ namespace Proyecto_Final.Controllers
         [HttpDelete,Route("Delete/{userSender}/{userRecipient}")]
         public IActionResult Delete(string userSender, string userRecipient)
         {
+            Chat chat = new Chat();
+            chat.userSender = userSender;
+            chat.userRecipient = userRecipient;
+
+            _chatService.Remove(chat);
             return Ok();
         }
     }
