@@ -88,5 +88,37 @@ namespace Proyecto_Final.Controllers
 
             return Ok();
         }
+
+
+        // GET: api/Messages/GetConversation
+        [HttpGet, Route("GetMensaje/{userName}/{userFriend}/{palabraClave}")]
+        public ActionResult<List<Message>> GetMensaje(string userName, string userFriend, string palabraClave)
+        {
+            Friend friend = new Friend();
+            friend.userName = userName;
+            friend.userFriend = userFriend;
+
+
+            var messagesList = _messageService.Get(friend.userName, friend);
+            var MensajesEncontrados = new List<Message>();
+            foreach (var item in messagesList)
+            {
+                var numeroCifrado = cifrado.GenerarNumeroCifrado(item.userSender, item.userRecipient);
+                item.messageSent = cifrado.LeerArchivo(item.messageSent, numeroCifrado, false);
+                numeroCifrado = cifrado.GenerarNumeroCifrado(item.userRecipient);
+                item.messageSent = cifrado.LeerArchivo(item.messageSent, numeroCifrado, false);
+                numeroCifrado = cifrado.GenerarNumeroCifrado(item.userSender);
+                item.messageSent = cifrado.LeerArchivo(item.messageSent, numeroCifrado, false);
+
+                if (item.messageSent.Contains(palabraClave))
+                {
+                    MensajesEncontrados.Add(item);
+                }
+            }
+
+
+            return MensajesEncontrados;
+        }
+
     }
 }

@@ -10,12 +10,7 @@ using MvcLogin.Models;
 using Newtonsoft.Json;
 using Metodos;
 using System.IO;
-using System.Text;
 using System.Net;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace MvcLogin.Controllers
 {
@@ -27,14 +22,15 @@ namespace MvcLogin.Controllers
 
 
         [HttpPost]
-        public HttpResponseMessage Login(User user)
+        public HttpResponseMessage Login2(User user)
         {
-            bool Isvalid = false;
+            HttpResponseMessage hrm = new HttpResponseMessage();
             IEnumerable<Models.User> UsuariosDB = new List<Models.User>();
             //archivos2 = db.ObtenerLista();
 
             using (var client = new HttpClient())
             {
+
                 client.BaseAddress = new Uri("http://localhost:58142/api/users");
                 //HTTP GET
                 var responseTask = client.GetAsync("Users");
@@ -59,20 +55,63 @@ namespace MvcLogin.Controllers
                     {
                         User u = item;
                         if (u == null)
-                            return Request.CreateResponse(HttpStatusCode.NotFound,
-                                 "The user was not found.");
+                        {
+                            hrm = new HttpResponseMessage(HttpStatusCode.NotFound);
+                        }
                         bool credentials = u.Password.Equals(user.Password);
-                        if (!credentials) return Request.CreateResponse(HttpStatusCode.Forbidden,
-                            "The username/password combination was wrong.");
-                        return Request.CreateResponse(HttpStatusCode.OK,
-                             TokenManager.GenerateToken(user.userName));
+                        if (!credentials) { hrm = new HttpResponseMessage(HttpStatusCode.Forbidden);
+                            hrm = new HttpResponseMessage(HttpStatusCode.OK);
+                            TokenManager.GenerateToken(user.userName); }
                     }
                 }
+                return hrm;
             }
         }
 
 
+        public ActionResult Encontrarmensaje(string userFriend, string userName)
+        {
+            MensajeModel mensajeabuscar = new MensajeModel();
+            mensajeabuscar.userSender = userName;
+            mensajeabuscar.userRecipient = userFriend;
+            return View(mensajeabuscar);
+        }
 
+        [HttpPost]
+        public ActionResult Encontrarmensaje(MensajeModel mensaje)
+        {
+            return RedirectToAction("MostrarMensajeEncontrado", mensaje);
+        }
+
+
+        
+        public ActionResult MostrarMensajeEncontrado(MensajeModel mensaje)
+        {
+            IEnumerable<Models.MensajeModel> MensajesDB = new List<Models.MensajeModel>();
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:58142/api/Messages/");
+                //HTTP GET
+                var responseTask = client.GetAsync("GetMensaje/" + mensaje.userSender + "/" + mensaje.userRecipient+"/" + mensaje.messageSent);
+                responseTask.Wait();
+
+                var result = responseTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    MensajesDB = JsonConvert.DeserializeObject<IList<MensajeModel>>(result.Content.ReadAsStringAsync().Result);
+                    var readTask = result.Content.ReadAsStringAsync();
+                    readTask.Wait();
+                }
+                else
+                {
+                    MensajesDB = Enumerable.Empty<MensajeModel>();
+
+                    ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+                }
+            }
+            return View(MensajesDB);
+        }
 
 
         DefaultConnection db = DefaultConnection.getInstance;

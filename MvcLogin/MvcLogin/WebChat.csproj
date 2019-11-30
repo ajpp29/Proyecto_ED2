@@ -252,6 +252,8 @@
     <Content Include="Views\User\CambiarContraseña.cshtml" />
     <Content Include="Views\User\ObtenerChats.cshtml" />
     <Content Include="Views\User\EliminarCuenta.cshtml" />
+    <Content Include="Views\User\Encontrarmensaje.cshtml" />
+    <Content Include="Views\User\MostrarMensajeEncontrado.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Metodos\Metodos.csproj">

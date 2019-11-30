@@ -1,0 +1,46 @@
+﻿@model IEnumerable<MvcLogin.Models.MensajeModel>
+
+@{
+    ViewBag.Title = "MostrarMensajeEncontrado";
+}
+
+<h2>MostrarMensajeEncontrado</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.dateTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.messageSent)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.userSender)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.userRecipient)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.dateTime)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.messageSent)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.userSender)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.userRecipient)
+        </td>
+    </tr>
+}
+
+</table>

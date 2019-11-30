@@ -56,12 +56,12 @@ namespace Metodos
         {
             int numeroCifrado = default(int);
 
-            //foreach (var item in value.ToArray())
-            //{
-            //    numeroCifrado += (int)item;
-            //}
+            foreach (var item in value.ToArray())
+            {
+                numeroCifrado += (int)item;
+            }
 
-            numeroCifrado = value.GetHashCode();
+            //numeroCifrado = value.GetHashCode();
             numeroCifrado = (numeroCifrado % 1024);
             numeroCifrado = Math.Abs(numeroCifrado);
 
@@ -72,13 +72,18 @@ namespace Metodos
         {
             int numeroCifrado = default(int);
 
-            //foreach (var item in value.ToArray())
-            //{
-            //    numeroCifrado += (int)item;
-            //}
+            var num1 = default(int);
+            var num2 = default(int);
 
-            var num1 = value.GetHashCode();
-            var num2 = value.GetHashCode();
+            foreach (var item in value.ToArray())
+            {
+                num1 += (int)item;
+            }
+
+            foreach (var item in value2.ToArray())
+            {
+                num2 += (int)item;
+            }
 
             num1 = (num1 % 1024);
             num2 = (num2 % 1024);
