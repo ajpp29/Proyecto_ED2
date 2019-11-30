@@ -23,6 +23,9 @@
             <span>|</span>
             <span>|</span>
             @Html.ActionLink("Chat List", "ObtenerChats", "User")
+            <span>|</span>
+            <span>|</span>
+            @Html.ActionLink("Modificar Contraseña", "CambiarContraseña", "User", new { userName = User}, null)
         }
         else
         {

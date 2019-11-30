@@ -16,10 +16,76 @@ namespace MvcLogin.Controllers
 {
 
     public class UserController : Controller
-    {  
+    {
         DefaultConnection db = DefaultConnection.getInstance;
         UserModel Usuario = new UserModel();
+        [HttpGet]
+        public ActionResult CambiarContraseña()
+        {
+            User modificar = new User();
+            modificar.userName = db.UsuarioLoggeado.Email;
+            modificar.Password = db.UsuarioLoggeado.Password;
+            return View(modificar);
+        }
 
+        [HttpPost]
+        public ActionResult CambiarContraseña(User user)
+        {
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:58142/api/users/edit");
+
+                //HTTP POST
+                var putTask = client.PutAsJsonAsync<User>("Users", user);
+                putTask.Wait();
+
+                var result = putTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+
+                    return RedirectToAction("Index");
+                }
+            }
+            return View();
+        }
+        public bool Obtenerusuario(string usuario)
+        {
+            bool Isvalid = false;
+            IEnumerable<Models.User> UsuariosDB = new List<Models.User>();
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:58142/api/users");
+                //HTTP GET
+                var responseTask = client.GetAsync("Users");
+                responseTask.Wait();
+
+                var result = responseTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var readTask = result.Content.ReadAsStringAsync();
+                    readTask.Wait();
+                    UsuariosDB = JsonConvert.DeserializeObject<IList<User>>(readTask.Result);
+                }
+                else
+                {
+                    UsuariosDB = Enumerable.Empty<User>();
+
+                    ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+                }
+            }
+            IEnumerable<Models.User> Query = from prod in UsuariosDB
+                                             where prod.userName == usuario
+                                             select prod;
+
+            foreach (Models.User item in Query)
+            {
+                if (item.userName == usuario)  //Verificar password del usuario
+                {
+                    Isvalid = true;
+                }
+            }
+            return Isvalid;
+        }
         public ActionResult EliminarChat(string receptor, string emisor)
         {
             db.EliminarChat(receptor);
@@ -169,7 +235,7 @@ namespace MvcLogin.Controllers
 
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("https://localhost:44300/api/Friends/");
+                client.BaseAddress = new Uri("http://localhost:58142/api/Friends/");
                 //HTTP GET
                 var responseTask = client.GetAsync(db.UsuarioLoggeado.Email);
                 responseTask.Wait();
@@ -202,24 +268,27 @@ namespace MvcLogin.Controllers
          {
             us.userFriend = us.userName;
             us.userName = db.UsuarioLoggeado.Email;
-            using (var client = new HttpClient())
+            if (Obtenerusuario(us.userName))
             {
-                client.BaseAddress = new Uri("https://localhost:44300/api/Friends");
-
-
-                //HTTP POST
-                var postTask = client.PostAsJsonAsync<FriendModel>("Friends", us);
-                postTask.Wait();
-
-                var result = postTask.Result;
-                if (result.IsSuccessStatusCode)
+                using (var client = new HttpClient())
                 {
-                    return RedirectToAction("Index");
+                    client.BaseAddress = new Uri("http://localhost:58142/api/Friends");
+
+
+                    //HTTP POST
+                    var postTask = client.PostAsJsonAsync<FriendModel>("Friends", us);
+                    postTask.Wait();
+
+                    var result = postTask.Result;
+                    if (result.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction("Index");
+                    }
                 }
+
+                ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
             }
-
-            ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
-
+          
             //List<Models.UserModel> archivos2 = new List<Models.UserModel>();
             //archivos2 = db.ObtenerLista();
             //for (int i = 0; i < archivos2.Count; i++)
@@ -241,35 +310,39 @@ namespace MvcLogin.Controllers
             User newuser = new User();
             newuser.userName = user.Email;
             newuser.Password = user.Password;
-            using (var client = new HttpClient())
+            if (Obtenerusuario(user.Email) != true)
             {
-                client.BaseAddress = new Uri("https://localhost:44300/api/users");
-
-
-                //HTTP POST
-                var postTask = client.PostAsJsonAsync<User>("Users", newuser);
-                postTask.Wait();
-
-                var result = postTask.Result;
-                if (result.IsSuccessStatusCode)
+                using (var client = new HttpClient())
                 {
-                    return RedirectToAction("Index");
+                    client.BaseAddress = new Uri("http://localhost:58142/api/users");
+
+
+                    //HTTP POST
+                    var postTask = client.PostAsJsonAsync<User>("Users", newuser);
+                    postTask.Wait();
+
+                    var result = postTask.Result;
+                    if (result.IsSuccessStatusCode)
+                    {
+                        return RedirectToAction("Index");
+                    }
+                }
+
+                ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
+
+                if (ModelState.IsValid)
+                {
+                    Usuario.Email = user.Email;
+                    Usuario.Password = user.Password;
+                    db.AddUsuario(Usuario);
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Login data is incorrect."); //adicionar mensaje de error al modelo 
                 }
             }
-
-            ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
-
-            if (ModelState.IsValid)
-            {
-                Usuario.Email = user.Email;
-                Usuario.Password = user.Password;
-                db.AddUsuario(Usuario);
-                return RedirectToAction("Index", "Home");
-            }
-            else
-            {
-                ModelState.AddModelError("", "Login data is incorrect."); //adicionar mensaje de error al modelo 
-            }
+            
             return View();
         }
 
@@ -288,13 +361,9 @@ namespace MvcLogin.Controllers
 
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri("https://localhost:44300/api/users");
+                client.BaseAddress = new Uri("http://localhost:58142/api/users");
                 //HTTP GET
-<<<<<<< HEAD
                 var responseTask = client.GetAsync("Users");
-=======
-                var responseTask = client.GetAsync("Users"); 
->>>>>>> Mensajes
                 //var responseTask1 = client.GetAsync("Users");
                 responseTask.Wait();
 

@@ -236,6 +236,7 @@
     <Content Include="Views\User\ObtenerMensajes.cshtml" />
     <Content Include="Views\User\EnviarArchivo.cshtml" />
     <Content Include="Views\User\SeeFriends.cshtml" />
+    <Content Include="Views\User\CambiarContraseña.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Metodos\Metodos.csproj">

@@ -54,11 +54,12 @@ namespace Proyecto_Final.Controllers
             return CreatedAtRoute("GetUser", new { userName = user.userName.ToString() }, user);
         }
 
-        // PUT: api/Users/5
+        // PUT: api/Users/edit
         //[HttpPut("{id:length(24)}")]
         [HttpPut("{userName}")]
-        public IActionResult Update(string userName, User userIn)
+        public IActionResult Update(User userIn)
         {
+            string userName = userIn.userName;
             var user = _userService.Get(userName);
 
             if (user == null)
