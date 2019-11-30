@@ -25,7 +25,7 @@
             @Html.ActionLink("Chat List", "ObtenerChats", "User", new { userName = User.Identity.Name }, null)
             <span>|</span>
             <span>|</span>
-            @Html.ActionLink("Modificar Contraseña", "CambiarContraseña", "User", new { userName = User }, null)
+            @Html.ActionLink("Modificar Contraseña", "CambiarContraseña", "User", new { userName = User.Identity.Name }, null)
             <span>|</span>
             <span>|</span>
 

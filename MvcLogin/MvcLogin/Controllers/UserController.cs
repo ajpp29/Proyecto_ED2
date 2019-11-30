@@ -387,27 +387,25 @@ namespace MvcLogin.Controllers
             fr.userFriend = userFriend;
             if (Validate(userName))
             {
-                if (YasonAmigos(fr))
-                {
-
-                }
-                else { 
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:58142/api/Chats/Create");
-
-
-                    //HTTP POST
-                    var postTask = client.PostAsJsonAsync<Chat>("Create", nuevochat);
-                    postTask.Wait();
-
-                    var result = postTask.Result;
-                    if (result.IsSuccessStatusCode)
+                    if(YatieneChat(userName, userFriend) != true)
                     {
-                        return RedirectToAction("Index");
+                        using (var client = new HttpClient())
+                        {
+                            client.BaseAddress = new Uri("http://localhost:58142/api/Chats/Create");
+
+
+                            //HTTP POST
+                            var postTask = client.PostAsJsonAsync<Chat>("Create", nuevochat);
+                            postTask.Wait();
+
+                            var result = postTask.Result;
+                            if (result.IsSuccessStatusCode)
+                            {
+                                return RedirectToAction("Index");
+                            }
+                        }
                     }
-                    }
-                }
+               
 
                 ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
                 return View("Index");
@@ -611,14 +609,14 @@ namespace MvcLogin.Controllers
         public bool YasonAmigos(FriendModel us)
         {
             bool Isvalid = false;
-            IEnumerable<Models.User> amigosDB = new List<Models.User>();
+            IEnumerable<Models.FriendModel> amigosDB = new List<Models.FriendModel>();
             //archivos2 = db.ObtenerLista();
 
             using (var client = new HttpClient())
             {
                 client.BaseAddress = new Uri("http://localhost:58142/api/Friends/");
                 //HTTP GET
-                var responseTask = client.GetAsync(us.userFriend);
+                var responseTask = client.GetAsync(us.userName);
                 responseTask.Wait();
 
                 var result = responseTask.Result;
@@ -626,29 +624,74 @@ namespace MvcLogin.Controllers
                 {
                     var readTask = result.Content.ReadAsStringAsync();
                     readTask.Wait();
-                    amigosDB = JsonConvert.DeserializeObject<IList<User>>(readTask.Result);
+                    amigosDB = JsonConvert.DeserializeObject<IList<FriendModel>>(readTask.Result);
                 }
                 else
                 {
-                    amigosDB = Enumerable.Empty<User>();
+                    amigosDB = Enumerable.Empty<FriendModel>();
 
                     ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
                 }
             }
 
-            IEnumerable<Models.User> Query = from prod in amigosDB
+            IEnumerable<Models.FriendModel> Query = from prod in amigosDB
                                              where prod.userName == us.userName
                                              select prod;
 
-            foreach (Models.User item in Query)
+            foreach (Models.FriendModel item in Query)
             {
-                if (item.userName == us.userName)  //Verificar password del usuario
+                if (item.userName == us.userName && item.userFriend == us.userFriend)  //Verificar password del usuario
                 {
                     Isvalid = true;
                 }
             }
             return Isvalid;
         }
+
+
+
+        public bool YatieneChat(string userName, string userFriend)
+        {
+            bool Isvalid = false;
+            IEnumerable<Models.Chat> amigosDB = new List<Models.Chat>();
+            //archivos2 = db.ObtenerLista();
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:58142/api/Chats/");
+                //HTTP GET
+                var responseTask = client.GetAsync("GetChat/"+userName);
+                responseTask.Wait();
+
+                var result = responseTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var readTask = result.Content.ReadAsStringAsync();
+                    readTask.Wait();
+                    amigosDB = JsonConvert.DeserializeObject<IList<Chat>>(readTask.Result);
+                }
+                else
+                {
+                    amigosDB = Enumerable.Empty<Chat>();
+
+                    ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+                }
+            }
+
+            IEnumerable<Models.Chat> Query = from prod in amigosDB
+                                             where prod.userSender == userName
+                                             select prod;
+
+            foreach (Models.Chat item in Query)
+            {
+                if (item.userSender == userName && item.userRecipient == userFriend)  //Verificar password del usuario
+                {
+                    Isvalid = true;
+                }
+            }
+            return Isvalid;
+        }
+
 
         private bool Isvalid(string Email, string password)
         {
