@@ -290,11 +290,7 @@ namespace MvcLogin.Controllers
             {
                 client.BaseAddress = new Uri("https://localhost:44300/api/users");
                 //HTTP GET
-<<<<<<< HEAD
                 var responseTask = client.GetAsync("Users");
-=======
-                var responseTask = client.GetAsync("Users"); 
->>>>>>> Mensajes
                 //var responseTask1 = client.GetAsync("Users");
                 responseTask.Wait();
 

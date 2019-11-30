@@ -20,9 +20,9 @@ namespace Proyecto_Final.Controllers
             _messageService = messageService;
         }
 
-        // GET: api/Messages
-        [HttpGet,Route("GetFriend/{userName}/{userFriend}")]
-        public ActionResult<List<Message>> GetFriend(string userName,string userFriend)
+        // GET: api/Messages/GetConversation
+        [HttpGet,Route("GetConversation/{userName}/{userFriend}")]
+        public ActionResult<List<Message>> GetConversation(string userName,string userFriend)
         {
             Friend friend = new Friend();
             friend.userName = userName;
@@ -31,17 +31,17 @@ namespace Proyecto_Final.Controllers
         }
 
         // GET: api/Messages/5
-        [HttpGet("{id}", Name = "GetMessage")]
-        public string Get(int id)
-        {
-            return "value";
-        }
+        //[HttpGet("{id}", Name = "GetMessage")]
+        //public string Get(int id)
+        //{
+        //    return "value";
+        //}
 
-        // POST: api/Messages
-        [HttpPost]
-        public ActionResult<Message> Post(Message message)
+        // POST: api/Messages/SendMessage
+        [HttpPost,Route("SendMessage")]
+        public IActionResult Post(Message message)
         {
-            message.dateTime = DateTime.Today;
+            message.dateTime = DateTime.Now;
             message.Original = true;
             _messageService.Create(message);
             Message copia = new Message();
@@ -52,19 +52,25 @@ namespace Proyecto_Final.Controllers
             copia.Original = false;
             _messageService.Create(copia);
 
-            return CreatedAtRoute("GetMessage", new { userName = message.userSender.ToString() }, message);
+            return Ok();
         }
 
-        // PUT: api/Messages/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+        //// PUT: api/Messages/5
+        //[HttpPut("{id}")]
+        //public void Put(int id, [FromBody] string value)
+        //{
+        //}
 
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        // DELETE: api/Messages/DeleteMessages
+        [HttpDelete,Route("DeleteMessages/{userName}/{userFriend}")]
+        public IActionResult Delete(string userName,string userFriend)
         {
+            Friend friend = new Friend();
+            friend.userName = userName;
+            friend.userFriend = userFriend;
+            _messageService.Remove(friend);
+
+            return Ok();
         }
     }
 }

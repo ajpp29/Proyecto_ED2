@@ -27,7 +27,7 @@ namespace Proyecto_Final.Controllers
         //    return  _friendService.Get(userName);
         //}
 
-        // GET: api/Friends/5
+        // GET: api/Friends
         [HttpGet("{userName}", Name = "GetFriend")]
         public ActionResult<List<Friend>> Get(string userName)
         {
@@ -44,9 +44,13 @@ namespace Proyecto_Final.Controllers
         }
 
         // PUT: api/Friends/5
-        [HttpPut("{userName}")]
-        public IActionResult Delete(string userName, Friend friendIn)
+        [HttpDelete,Route("Delete/{userName}/{userFriend}")]
+        public IActionResult Delete(string userName, string userFriend)
         {
+            Friend friendIn = new Friend();
+            friendIn.userName = userName;
+            friendIn.userFriend = userFriend;
+
             var friends = _friendService.Get(userName);
             
 
