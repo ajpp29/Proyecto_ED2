@@ -51,8 +51,50 @@ namespace Metodos
             Key2 = new int[8];
         }
 
-        public string LeerArchivo(string textoObtenido, bool operacion)
+
+        public int GenerarNumeroCifrado(string value)
         {
+            int numeroCifrado = default(int);
+
+            //foreach (var item in value.ToArray())
+            //{
+            //    numeroCifrado += (int)item;
+            //}
+
+            numeroCifrado = value.GetHashCode();
+            numeroCifrado = (numeroCifrado % 1024);
+            numeroCifrado = Math.Abs(numeroCifrado);
+
+            return numeroCifrado;
+        }
+
+        public int GenerarNumeroCifrado(string value, string value2)
+        {
+            int numeroCifrado = default(int);
+
+            //foreach (var item in value.ToArray())
+            //{
+            //    numeroCifrado += (int)item;
+            //}
+
+            var num1 = value.GetHashCode();
+            var num2 = value.GetHashCode();
+
+            num1 = (num1 % 1024);
+            num2 = (num2 % 1024);
+
+            numeroCifrado = num1 + num2;
+            numeroCifrado = (numeroCifrado % 1024);
+
+            numeroCifrado = Math.Abs(numeroCifrado);
+
+            return numeroCifrado;
+        }
+
+        public string LeerArchivo(string textoObtenido, int numbertoCipher, bool operacion)
+        {
+            GenerarKeys(numbertoCipher);
+
             int bufferLength = 10;
             StringBuilder builder = new StringBuilder();
             int auxIndex = 0;

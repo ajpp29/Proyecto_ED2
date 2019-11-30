@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Metodos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Proyecto_Final.Models;
@@ -14,6 +15,7 @@ namespace Proyecto_Final.Controllers
     public class MessagesController : ControllerBase
     {
         private readonly MessageService _messageService;
+        Cifrado cifrado = new Cifrado(0);
 
         public MessagesController(MessageService messageService)
         {
@@ -27,7 +29,21 @@ namespace Proyecto_Final.Controllers
             Friend friend = new Friend();
             friend.userName = userName;
             friend.userFriend = userFriend;
-            return _messageService.Get(friend.userName,friend);
+
+
+            var messagesList = _messageService.Get(friend.userName,friend);
+
+            foreach (var item in messagesList)
+            {
+                var numeroCifrado = cifrado.GenerarNumeroCifrado(item.userSender,item.userRecipient);
+                item.messageSent = cifrado.LeerArchivo(item.messageSent, numeroCifrado, false);
+                numeroCifrado = cifrado.GenerarNumeroCifrado(item.userRecipient);
+                item.messageSent = cifrado.LeerArchivo(item.messageSent, numeroCifrado, false);
+                numeroCifrado = cifrado.GenerarNumeroCifrado(item.userSender);
+                item.messageSent = cifrado.LeerArchivo(item.messageSent, numeroCifrado, false);
+            }
+
+            return messagesList;
         }
 
         // GET: api/Messages/5
@@ -41,6 +57,13 @@ namespace Proyecto_Final.Controllers
         [HttpPost,Route("SendMessage")]
         public IActionResult Post(Message message)
         {
+            var numeroCifrado = cifrado.GenerarNumeroCifrado(message.userSender);
+            message.messageSent = cifrado.LeerArchivo(message.messageSent, numeroCifrado, true);
+            numeroCifrado = cifrado.GenerarNumeroCifrado(message.userRecipient);
+            message.messageSent = cifrado.LeerArchivo(message.messageSent, numeroCifrado, true);
+            numeroCifrado = cifrado.GenerarNumeroCifrado(message.userSender, message.userRecipient);
+            message.messageSent = cifrado.LeerArchivo(message.messageSent, numeroCifrado, true);
+
             message.dateTime = DateTime.Now;
             message.Original = true;
             _messageService.Create(message);
