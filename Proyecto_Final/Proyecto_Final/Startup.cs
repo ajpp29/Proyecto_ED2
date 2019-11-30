@@ -65,6 +65,16 @@ namespace Proyecto_Final
             services.AddSingleton<MessageService>();
 
             ////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////
+            services.Configure<ChatsDatabaseSettings>(
+            Configuration.GetSection(nameof(ChatsDatabaseSettings)));
+
+            services.AddSingleton<IChatsDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<ChatsDatabaseSettings>>().Value);
+
+            services.AddSingleton<ChatService>();
+
+            ////////////////////////////////////////////////////////////
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
