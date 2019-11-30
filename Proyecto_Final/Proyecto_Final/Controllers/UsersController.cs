@@ -31,7 +31,8 @@ namespace Proyecto_Final.Controllers
 
             foreach (var item in usersList)
             {
-                item.Password = cifrado.LeerArchivo(item.Password, false);
+                var numeroCifrado = cifrado.GenerarNumeroCifrado(item.userName);
+                item.Password = cifrado.LeerArchivo(item.Password, numeroCifrado, false);
             }
 
             return usersList;
@@ -49,7 +50,8 @@ namespace Proyecto_Final.Controllers
                 return NotFound();
             }
 
-            user.Password = cifrado.LeerArchivo(user.Password, false);
+            var numeroCifrado = cifrado.GenerarNumeroCifrado(user.userName);
+            user.Password = cifrado.LeerArchivo(user.Password, numeroCifrado, false);
 
             return user;
         }
@@ -59,9 +61,12 @@ namespace Proyecto_Final.Controllers
         public ActionResult<User> Create(User user)
         {
             ///////RECIEN AÑADIDO
-            user.Password = cifrado.LeerArchivo(user.Password, true);
+            var numeroCifrado = cifrado.GenerarNumeroCifrado(user.userName);
+            //////////////////////////////
+
+            user.Password = cifrado.LeerArchivo(user.Password, numeroCifrado, true);
             //var descifrar = cifrado.LeerArchivo(cifrar, false);
-            /////////////////////
+
             _userService.Create(user);
 
             return CreatedAtRoute("GetUser", new { userName = user.userName.ToString() }, user);
@@ -72,6 +77,9 @@ namespace Proyecto_Final.Controllers
         [HttpPut("edit")]
         public IActionResult Update(User userIn)
         {
+            var numeroCifrado = cifrado.GenerarNumeroCifrado(userIn.userName);
+            userIn.Password= cifrado.LeerArchivo(userIn.Password, numeroCifrado, true);
+
             string userName = userIn.userName;
             var user = _userService.Get(userName);
 
