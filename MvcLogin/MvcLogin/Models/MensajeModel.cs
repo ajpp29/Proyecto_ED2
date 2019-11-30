@@ -8,9 +8,9 @@ namespace MvcLogin.Models
     public class MensajeModel
     {
         
-        public string Contenido { get; set; }
-        public string emisor { get; set; }
-        public string receptor { get; set; }
+        public string messageSent { get; set; }
+        public string userSender { get; set; }
+        public string userRecipient { get; set; }
 
     }
 }
