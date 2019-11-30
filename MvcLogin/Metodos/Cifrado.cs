@@ -51,12 +51,42 @@ namespace Metodos
             Key2 = new int[8];
         }
 
-        public void LeerArchivo(StringBuilder textoObtenido, bool operacion)
+        public string LeerArchivo(string textoObtenido, bool operacion)
         {
-            int bufferLength = 100;
+            int bufferLength = 10;
             StringBuilder builder = new StringBuilder();
-
+            int auxIndex = 0;
             var buffer = new char[bufferLength];
+
+            for (int i = 0; i < textoObtenido.ToString().Length; i++)
+            {
+                if ((textoObtenido.ToString().Length - i) >= 10)
+                {
+                    buffer = textoObtenido.ToString().Substring(i, 10).ToCharArray();
+                    i += 9;
+                }
+                else
+                {
+                    buffer = textoObtenido.ToString().Substring(i, (textoObtenido.ToString().Length - i)).ToCharArray();
+                    i += (textoObtenido.ToString().Length - i);
+                }
+
+                if (operacion)
+                {
+                    foreach (var item in buffer)
+                    {
+                        builder.Append(Cipher(item));
+                    }
+                }
+                else
+                {
+                    foreach (var item in buffer)
+                    {
+                        builder.Append(Descrifrado(item));
+                    }
+                }
+            }
+
             //using (var file = new FileStream(db.ObtenerRuta().FullName, FileMode.Open))
             //using (var file = new TextReader())
             //{
@@ -74,9 +104,11 @@ namespace Metodos
             //    }
 
             //}
+
+            return builder.ToString();
         }
 
-        public char Cipher(char num_caracter)
+        private char Cipher(char num_caracter)
         {
             var caracter = GenerarCaracterInicial((int)num_caracter);
             var caracterIP = ObtenerIP(caracter);
@@ -258,7 +290,7 @@ namespace Metodos
         /// <summary>
         /// //////////////////////////////////////////////////////
         /// </summary>
-        public char Descrifrado(char num_caracter)
+        private char Descrifrado(char num_caracter)
         {
             var caracter = GenerarCaracterInicial((int)num_caracter);
             var caracterIP = ObtenerIP(caracter);
