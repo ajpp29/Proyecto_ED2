@@ -11,12 +11,70 @@ using Newtonsoft.Json;
 using Metodos;
 using System.IO;
 using System.Text;
+using System.Net;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace MvcLogin.Controllers
 {
 
     public class UserController : Controller
     {
+
+
+
+
+        [HttpPost]
+        public HttpResponseMessage Login(User user)
+        {
+            bool Isvalid = false;
+            IEnumerable<Models.User> UsuariosDB = new List<Models.User>();
+            //archivos2 = db.ObtenerLista();
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:58142/api/users");
+                //HTTP GET
+                var responseTask = client.GetAsync("Users");
+                //var responseTask1 = client.GetAsync("Users");
+                responseTask.Wait();
+
+                var result = responseTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var readTask = result.Content.ReadAsStringAsync();
+                    readTask.Wait();
+                    UsuariosDB = JsonConvert.DeserializeObject<IList<User>>(readTask.Result);
+                }
+
+                IEnumerable<Models.User> Query = from prod in UsuariosDB
+                                                 where prod.userName == user.userName
+                                                 select prod;
+
+                foreach (Models.User item in Query)
+                {
+                    if (item.userName == user.userName)  //Verificar password del usuario
+                    {
+                        User u = item;
+                        if (u == null)
+                            return Request.CreateResponse(HttpStatusCode.NotFound,
+                                 "The user was not found.");
+                        bool credentials = u.Password.Equals(user.Password);
+                        if (!credentials) return Request.CreateResponse(HttpStatusCode.Forbidden,
+                            "The username/password combination was wrong.");
+                        return Request.CreateResponse(HttpStatusCode.OK,
+                             TokenManager.GenerateToken(user.userName));
+                    }
+                }
+            }
+        }
+
+
+
+
+
         DefaultConnection db = DefaultConnection.getInstance;
         UserModel Usuario = new UserModel();
         [HttpGet]
@@ -86,6 +144,8 @@ namespace MvcLogin.Controllers
             }
             return Isvalid;
         }
+       
+
         public ActionResult EliminarChat(string userFriend, string userName)
         {
             using (var client = new HttpClient())

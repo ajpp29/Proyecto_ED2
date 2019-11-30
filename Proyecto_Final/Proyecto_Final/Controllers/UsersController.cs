@@ -14,7 +14,7 @@ namespace Proyecto_Final.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        
+
         private readonly UserService _userService;
         Cifrado cifrado = new Cifrado(0);
 
@@ -88,7 +88,7 @@ namespace Proyecto_Final.Controllers
 
         // DELETE: api/ApiWithActions/5
         //[HttpDelete("{id:length(24)}")]
-        [HttpDelete("{userName}")]
+        [HttpDelete, Route("Delete/{userName}")]
         public IActionResult Delete(string userName)
         {
             var user = _userService.Get(userName);
