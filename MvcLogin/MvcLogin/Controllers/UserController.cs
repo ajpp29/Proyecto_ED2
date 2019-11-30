@@ -36,7 +36,7 @@ namespace MvcLogin.Controllers
                 client.BaseAddress = new Uri("http://localhost:58142/api/users/edit");
 
                 //HTTP POST
-                var putTask = client.PutAsJsonAsync<User>("Users", user);
+                var putTask = client.PutAsJsonAsync<User>("edit", user);
                 putTask.Wait();
 
                 var result = putTask.Result;
