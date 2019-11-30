@@ -174,32 +174,52 @@ namespace MvcLogin.Controllers
         }
         public ActionResult AddChat(string email)
         {
-            List<Models.FriendModel> archivos3 = new List<Models.FriendModel>();
-            archivos3 = db.ObtenerFriends();
-            List<Models.FriendModel> archivos4 = new List<Models.FriendModel>();
-            archivos4 = db.ObtenerChats();
-            bool bandera = false;
-            if (email != null)
+            Chat nuevochat = new Chat();
+            nuevochat.userRecipient = email;
+            nuevochat.userSender = db.UsuarioLoggeado.Email;
+            using (var client = new HttpClient())
             {
-                for (int i = 0; i < archivos4.Count; i++)
-            {
-                if (archivos4[i].userName == email)
+                client.BaseAddress = new Uri("http://localhost:58142/api/Chats/Create");
+
+
+                //HTTP POST
+                var postTask = client.PostAsJsonAsync<Chat>("Create", nuevochat);
+                postTask.Wait();
+
+                var result = postTask.Result;
+                if (result.IsSuccessStatusCode)
                 {
-                    bandera = true; 
+                    return RedirectToAction("Index");
                 }
             }
-            if(bandera != true)
-            {             
-                for (int i = 0; i < archivos3.Count; i++)
-                {
-                if(archivos3[i].userName == email)
-                {
-                    archivos3[i].userFriend = db.UsuarioLoggeado.Email;
-                    db.AddChat(archivos3[i]);
-                }
-                }
-                }
-            }
+
+            ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
+            //    List<Models.FriendModel> archivos3 = new List<Models.FriendModel>();
+            //    archivos3 = db.ObtenerFriends();
+            //    List<Models.FriendModel> archivos4 = new List<Models.FriendModel>();
+            //    archivos4 = db.ObtenerChats();
+            //    bool bandera = false;
+            //    if (email != null)
+            //    {
+            //        for (int i = 0; i < archivos4.Count; i++)
+            //    {
+            //        if (archivos4[i].userName == email)
+            //        {
+            //            bandera = true; 
+            //        }
+            //    }
+            //    if(bandera != true)
+            //    {             
+            //        for (int i = 0; i < archivos3.Count; i++)
+            //        {
+            //        if(archivos3[i].userName == email)
+            //        {
+            //            archivos3[i].userFriend = db.UsuarioLoggeado.Email;
+            //            db.AddChat(archivos3[i]);
+            //        }
+            //        }
+            //        }
+            //    }
             return View("Index");
         }
 
@@ -208,16 +228,16 @@ namespace MvcLogin.Controllers
         MensajeModel nuevo = new MensajeModel();
         public ActionResult NuevoMensaje(string emisor, string receptor)
         {
-            nuevo.emisor = emisor;
-            nuevo.receptor = receptor;
+            nuevo.userSender = emisor;
+            nuevo.userRecipient = receptor;
             return View("NuevoMensaje");
         }
         [HttpPost]
         public ActionResult NuevoMensaje(MensajeModel Nuevo)
         {
-            nuevo.Contenido = Nuevo.Contenido;
-            nuevo.emisor = Nuevo.emisor;
-            nuevo.receptor = Nuevo.receptor;
+            nuevo.messageSent = Nuevo.messageSent;
+            nuevo.userSender = Nuevo.userSender;
+            nuevo.userRecipient = Nuevo.userRecipient;
             db.addmensaje(nuevo);
             return View("Index");
         }
