@@ -78,14 +78,6 @@ namespace Proyecto_Final.Controllers
             return Ok();
         }
 
-        //// PUT: api/Messages/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
-
-        // DELETE: api/Messages/DeleteMessages
-        //us loggeado, receptor
         [HttpDelete,Route("DeleteMessages/{userName}/{userFriend}")]
         public IActionResult Delete(string userName,string userFriend)
         {

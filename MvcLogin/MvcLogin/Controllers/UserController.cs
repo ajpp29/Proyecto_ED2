@@ -86,10 +86,55 @@ namespace MvcLogin.Controllers
             }
             return Isvalid;
         }
-        public ActionResult EliminarChat(string receptor, string emisor)
+        public ActionResult EliminarChat(string userFriend, string userName)
         {
-            db.EliminarChat(receptor);
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:58142/api/Messages/");
+                string parametros = "DeleteMessages/" + userName + "/" + userFriend;
+                //HTTP DELETE
+                var deleteTask = client.DeleteAsync(parametros.ToString());
+                deleteTask.Wait();
+
+                var result = deleteTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    Eliminarchat2(userFriend, userName);
+                }
+            }
             return View("Index");
+        }
+
+        public void Eliminarchat2(string userFriend, string userName)
+        {
+            using (var client2 = new HttpClient())
+            {
+                client2.BaseAddress = new Uri("http://localhost:58142/api/Chats/");
+                string parametros2 = "Delete/" + userName + "/" + userFriend;
+                //HTTP DELETE
+                var deleteTask2 = client2.DeleteAsync(parametros2.ToString());
+                deleteTask2.Wait();
+            }
+        }
+        public ActionResult EliminarMensajes(string userFriend, string userName)
+        {
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:58142/api/Messages/");
+                string parametros = "DeleteMessages/" + userName + "/" + userFriend;
+                //HTTP DELETE
+                var deleteTask = client.DeleteAsync(parametros.ToString());
+                deleteTask.Wait();
+
+                var result = deleteTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+
+                    return RedirectToAction("Index");
+                }
+            }
+            return View();
         }
 
         //ENVIAR ARCHIVO
@@ -235,32 +280,6 @@ namespace MvcLogin.Controllers
             }
 
             ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
-            //    List<Models.FriendModel> archivos3 = new List<Models.FriendModel>();
-            //    archivos3 = db.ObtenerFriends();
-            //    List<Models.FriendModel> archivos4 = new List<Models.FriendModel>();
-            //    archivos4 = db.ObtenerChats();
-            //    bool bandera = false;
-            //    if (email != null)
-            //    {
-            //        for (int i = 0; i < archivos4.Count; i++)
-            //    {
-            //        if (archivos4[i].userName == email)
-            //        {
-            //            bandera = true; 
-            //        }
-            //    }
-            //    if(bandera != true)
-            //    {             
-            //        for (int i = 0; i < archivos3.Count; i++)
-            //        {
-            //        if(archivos3[i].userName == email)
-            //        {
-            //            archivos3[i].userFriend = db.UsuarioLoggeado.Email;
-            //            db.AddChat(archivos3[i]);
-            //        }
-            //        }
-            //        }
-            //    }
             return View("Index");
         }
 
@@ -363,36 +382,28 @@ namespace MvcLogin.Controllers
          {
             us.userFriend = us.userName;
             us.userName = db.UsuarioLoggeado.Email;
-            if (Obtenerusuario(us.userName))
+            if (Obtenerusuario(us.userFriend) == true )
             {
-                using (var client = new HttpClient())
+                if (YasonAmigos(us)!=true)
                 {
-                    client.BaseAddress = new Uri("http://localhost:58142/api/Friends");
-
-
-                    //HTTP POST
-                    var postTask = client.PostAsJsonAsync<FriendModel>("Friends", us);
-                    postTask.Wait();
-
-                    var result = postTask.Result;
-                    if (result.IsSuccessStatusCode)
+                    using (var client = new HttpClient())
                     {
-                        return RedirectToAction("Index");
-                    }
-                }
+                        client.BaseAddress = new Uri("http://localhost:58142/api/Friends");
 
-                ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
+
+                        //HTTP POST
+                        var postTask = client.PostAsJsonAsync<FriendModel>("Friends", us);
+                        postTask.Wait();
+
+                        var result = postTask.Result;
+                        if (result.IsSuccessStatusCode)
+                        {
+                            return RedirectToAction("Index");
+                        }
+                    }
+                    ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
+                }           
             }
-          
-            //List<Models.UserModel> archivos2 = new List<Models.UserModel>();
-            //archivos2 = db.ObtenerLista();
-            //for (int i = 0; i < archivos2.Count; i++)
-            //{               
-            //        if (archivos2[i].Email == us.userName)
-            //        {
-            //            db.AddFriend(us);
-            //        }
-            //}
             return View("Index");
         }
         public ActionResult Registration()
@@ -446,6 +457,48 @@ namespace MvcLogin.Controllers
 
             FormsAuthentication.SignOut();
             return RedirectToAction("Index", "Home");
+        }
+
+        public bool YasonAmigos(FriendModel us)
+        {
+            bool Isvalid = false;
+            IEnumerable<Models.User> amigosDB = new List<Models.User>();
+            //archivos2 = db.ObtenerLista();
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:58142/api/Friends/");
+                //HTTP GET
+                var responseTask = client.GetAsync(us.userFriend);
+                responseTask.Wait();
+
+                var result = responseTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    var readTask = result.Content.ReadAsStringAsync();
+                    readTask.Wait();
+                    amigosDB = JsonConvert.DeserializeObject<IList<User>>(readTask.Result);
+                }
+                else
+                {
+                    amigosDB = Enumerable.Empty<User>();
+
+                    ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+                }
+            }
+
+            IEnumerable<Models.User> Query = from prod in amigosDB
+                                             where prod.userName == db.UsuarioLoggeado.Email
+                                             select prod;
+
+            foreach (Models.User item in Query)
+            {
+                if (item.userName == db.UsuarioLoggeado.Email)  //Verificar password del usuario
+                {
+                    Isvalid = true;
+                }
+            }
+            return Isvalid;
         }
 
         private bool Isvalid(string Email, string password)

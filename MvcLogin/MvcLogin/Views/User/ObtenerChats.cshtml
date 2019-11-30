@@ -34,8 +34,8 @@
             @Html.ActionLink("Ver Documentos", "ObtenerArchivo", "User", new { /* id=item.PrimaryKey */ }, null) |
             @Html.ActionLink("Ver Mensajes", "ObtenerMensajes", "User", new { receptor = item.userRecipient, emisor = item.userSender }, null) |
             @Html.ActionLink("Buscar Mensaje", "BuscarMensaje", "User", new { /* id=item.PrimaryKey */ }, null) |
-            @Html.ActionLink("Vaciar Chat", "VaciarChat", "User", new { /* id=item.PrimaryKey */ }, null) |
-            @Html.ActionLink("Eliminar Chat", "EliminarChat", "User", new { receptor = item.userRecipient, emisor = item.userRecipient }, null)
+            @Html.ActionLink("Vaciar Chat", "EliminarMensajes", "User", new { userFriend = item.userRecipient, userName = item.userSender }, null) |
+            @Html.ActionLink("Eliminar Chat", "EliminarChat", "User", new { userFriend = item.userRecipient, userName = item.userSender }, null)
         </td>
     </tr>
 }
