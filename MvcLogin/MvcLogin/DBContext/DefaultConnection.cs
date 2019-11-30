@@ -12,13 +12,27 @@ namespace MvcLogin.DBContext
 {
     public class DefaultConnection
     {
+        Dictionary<string, string> claims = new Dictionary<string, string>();
         private static volatile DefaultConnection Instance;
         private static object syncRoot = new Object();
         public UserModel UsuarioLoggeado = new UserModel();
         public List<Models.UserModel> Usuarios = new List<Models.UserModel>();
         public int Email { get; set; }
         public int Contraseña { get; set; }
+        int counter = 0;
+        public string ObtenerToken(string usuario)
+        {
+            return claims[usuario];
+        }
+        public void GuardarToken(string token, string usuario)
+        {
+            claims.Add(usuario,token);
+        }
 
+        public bool EncontrarToken(string usuario)
+        {
+            return claims.ContainsKey(usuario);
+        }
         public List<Models.MensajeModel> ObtenerMensajes()
         {
             return UsuarioLoggeado.mensajes;

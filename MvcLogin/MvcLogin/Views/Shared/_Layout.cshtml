@@ -16,13 +16,13 @@
             @Html.ActionLink("Log Out", "LogOut", "User")
             <span>|</span>
             <span>|</span>
-            @Html.ActionLink("Add Friend", "AddFriend", "User")
+            @Html.ActionLink("Add Friend", "AddFriend", "User", new { userName = User.Identity.Name }, null)
             <span>|</span>
             <span>|</span>
-            @Html.ActionLink("Friend list", "SeeFriends", "User")
+            @Html.ActionLink("Friend list", "SeeFriends", "User", new { userName = User.Identity.Name }, null)
             <span>|</span>
             <span>|</span>
-            @Html.ActionLink("Chat List", "ObtenerChats", "User")
+            @Html.ActionLink("Chat List", "ObtenerChats", "User", new { userName = User.Identity.Name }, null)
             <span>|</span>
             <span>|</span>
             @Html.ActionLink("Modificar Contraseña", "CambiarContraseña", "User", new { userName = User }, null)

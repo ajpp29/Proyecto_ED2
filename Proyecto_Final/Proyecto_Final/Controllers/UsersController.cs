@@ -69,7 +69,8 @@ namespace Proyecto_Final.Controllers
 
             _userService.Create(user);
 
-            return CreatedAtRoute("GetUser", new { userName = user.userName.ToString() }, user);
+            //return CreatedAtRoute("GetUser", new { userName = user.userName.ToString() }, user);
+            return Ok();
         }
 
         // PUT: api/Users/e

@@ -29,8 +29,8 @@
             @Html.DisplayFor(modelItem => item.userFriend)
         </td>
         <td>
-            @Html.ActionLink("Chat", "AddChat", new { email=item.userFriend }) |
-            @Html.ActionLink("Delete", "Delete", new { email = item.userFriend })
+            @Html.ActionLink("Chat", "AddChat", new { userName = item.userName , userFriend = item.userFriend }) |
+            @Html.ActionLink("Delete", "Delete", new { userName = item.userName, userFriend = item.userFriend })
         </td>
     </tr>
 }

@@ -40,7 +40,8 @@ namespace Proyecto_Final.Controllers
         {
             _friendService.Create(friend);
 
-            return CreatedAtRoute("GetFriend", new { userName = friend.userName.ToString() }, friend);
+            // return CreatedAtRoute("GetFriend", new { userName = friend.userName.ToString() }, friend);
+            return Ok();
         }
 
         // PUT: api/Friends/Delete/{Email}/{userFriend}
