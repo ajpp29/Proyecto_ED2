@@ -43,7 +43,7 @@ namespace Proyecto_Final.Controllers
             return CreatedAtRoute("GetFriend", new { userName = friend.userName.ToString() }, friend);
         }
 
-        // PUT: api/Friends/5
+        // PUT: api/Friends/Delete/{Email}/{userFriend}
         [HttpDelete,Route("Delete/{userName}/{userFriend}")]
         public IActionResult Delete(string userName, string userFriend)
         {

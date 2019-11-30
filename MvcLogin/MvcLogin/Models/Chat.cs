@@ -7,7 +7,6 @@ namespace MvcLogin.Models
 {
     public class Chat
     {
-)]
         public string Id { get; set; }
 
         public string userSender { get; set; }

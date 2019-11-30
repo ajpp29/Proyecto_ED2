@@ -159,9 +159,26 @@ namespace MvcLogin.Controllers
             return View(user);
         }
 
-        public ActionResult Delete(string usuario)
+        public ActionResult Delete(string email)
         {
-            db.eliminarAmigo(usuario);
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:58142/api/Friends/");
+                string Email = db.UsuarioLoggeado.Email;
+                string userFriend = email;
+                string parametros = "Delete/" + Email + "/" + userFriend;
+                //HTTP DELETE
+                var deleteTask = client.DeleteAsync(parametros.ToString());
+                deleteTask.Wait();
+
+                var result = deleteTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+
+                    return RedirectToAction("Index");
+                }
+            }
+
             return View("Index");
         }
 
@@ -170,7 +187,31 @@ namespace MvcLogin.Controllers
 
         public ActionResult ObtenerChats()
         {
-            return View(db.ObtenerChats());
+            IEnumerable<Models.Chat> UsuariosDB = new List<Models.Chat>();
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:58142/api/Chats/GetChat/");
+                //HTTP GET
+                var responseTask = client.GetAsync(db.UsuarioLoggeado.Email);
+                responseTask.Wait();
+
+                var result = responseTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    UsuariosDB = JsonConvert.DeserializeObject<IList<Chat>>(result.Content.ReadAsStringAsync().Result);
+                    var readTask = result.Content.ReadAsStringAsync();
+                    readTask.Wait();
+                    UsuariosDB = JsonConvert.DeserializeObject<IList<Chat>>(readTask.Result);
+                }
+                else
+                {
+                    UsuariosDB = Enumerable.Empty<Chat>();
+
+                    ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+                }
+            }
+            return View(UsuariosDB);
         }
         public ActionResult AddChat(string email)
         {
@@ -225,27 +266,61 @@ namespace MvcLogin.Controllers
 
 
 
-        MensajeModel nuevo = new MensajeModel();
+        MensajeModel Nuevo = new MensajeModel();
         public ActionResult NuevoMensaje(string emisor, string receptor)
         {
-            nuevo.userSender = emisor;
-            nuevo.userRecipient = receptor;
-            return View("NuevoMensaje");
+            Nuevo.userSender = emisor;
+            Nuevo.userRecipient = receptor;
+            return View(Nuevo);
         }
         [HttpPost]
-        public ActionResult NuevoMensaje(MensajeModel Nuevo)
+        public ActionResult NuevoMensaje(MensajeModel nuevo)
         {
-            nuevo.messageSent = Nuevo.messageSent;
-            nuevo.userSender = Nuevo.userSender;
-            nuevo.userRecipient = Nuevo.userRecipient;
-            db.addmensaje(nuevo);
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:58142/api/Messages/SendMessage");
+
+
+                //HTTP POST
+                var postTask = client.PostAsJsonAsync<MensajeModel>("SendMessage", nuevo);
+                postTask.Wait();
+
+                var result = postTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    return RedirectToAction("Index");
+                }
+            }
+
+            ModelState.AddModelError(string.Empty, "Server Error. Please contact administrator.");
             return View("Index");
         }
-        public ActionResult ObtenerMensajes()
+        public ActionResult ObtenerMensajes(string receptor, string emisor )
         {
-            List<MensajeModel> listaMensajes = new List<MensajeModel>();
-            listaMensajes = db.ObtenerMensajes();
-            return View(listaMensajes);
+            IEnumerable<Models.MensajeModel> MensajesDB = new List<Models.MensajeModel>();
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri("http://localhost:58142/api/Messages/");
+                //HTTP GET
+                var responseTask = client.GetAsync("GetConversation/" + emisor + "/" + receptor);
+                responseTask.Wait();
+
+                var result = responseTask.Result;
+                if (result.IsSuccessStatusCode)
+                {
+                    MensajesDB = JsonConvert.DeserializeObject<IList<MensajeModel>>(result.Content.ReadAsStringAsync().Result);
+                    var readTask = result.Content.ReadAsStringAsync();
+                    readTask.Wait();
+                }
+                else
+                {
+                    MensajesDB = Enumerable.Empty<MensajeModel>();
+
+                    ModelState.AddModelError(string.Empty, "Server error. Please contact administrator.");
+                }
+            }
+            return View(MensajesDB);
         }
 
 

@@ -62,6 +62,7 @@ namespace Proyecto_Final.Controllers
         //}
 
         // DELETE: api/Messages/DeleteMessages
+        //us loggeado, receptor
         [HttpDelete,Route("DeleteMessages/{userName}/{userFriend}")]
         public IActionResult Delete(string userName,string userFriend)
         {

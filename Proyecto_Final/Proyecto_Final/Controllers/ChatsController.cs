@@ -56,7 +56,7 @@ namespace Proyecto_Final.Controllers
         //{
         //}
 
-        // DELETE: api/ApiWithActions/5
+        // DELETE: api/Chats/5
         [HttpDelete,Route("Delete/{userSender}/{userRecipient}")]
         public IActionResult Delete(string userSender, string userRecipient)
         {

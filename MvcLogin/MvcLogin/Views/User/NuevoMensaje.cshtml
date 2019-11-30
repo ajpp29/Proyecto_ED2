@@ -14,27 +14,27 @@
         <legend>MensajeModel</legend>
 
         <div class="editor-label">
-            @Html.LabelFor(model => model.Contenido)
+            @Html.LabelFor(model => model.messageSent)
         </div>
         <div class="editor-field">
-            @Html.EditorFor(model => model.Contenido)
-            @Html.ValidationMessageFor(model => model.Contenido)
+            @Html.EditorFor(model => model.messageSent)
+            @Html.ValidationMessageFor(model => model.messageSent)
         </div>
 
         <div class="editor-label">
-            @Html.LabelFor(model => model.emisor)
+            @Html.LabelFor(model => model.userSender)
         </div>
         <div class="editor-field">
-            @Html.TextBoxFor(model => model.emisor, new { @readonly = "readonly" })
-            @Html.ValidationMessageFor(model => model.emisor)
+            @Html.TextBoxFor(model => model.userSender, new { @readonly = "readonly" })
+            @Html.ValidationMessageFor(model => model.userSender)
         </div>
 
         <div class="editor-label">
-            @Html.LabelFor(model => model.receptor)
+            @Html.LabelFor(model => model.userRecipient)
         </div>
         <div class="editor-field">
-            @Html.TextBoxFor(model => model.receptor, new { @readonly = "readonly" })
-            @Html.ValidationMessageFor(model => model.receptor)
+            @Html.TextBoxFor(model => model.userRecipient, new { @readonly = "readonly" })
+            @Html.ValidationMessageFor(model => model.userRecipient)
         </div>
 
         <p>

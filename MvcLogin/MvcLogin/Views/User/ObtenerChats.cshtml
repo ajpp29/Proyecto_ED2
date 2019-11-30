@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MvcLogin.Models.FriendModel>
+﻿@model IEnumerable<MvcLogin.Models.Chat>
 
 @{
     ViewBag.Title = "ObtenerChats";
@@ -12,7 +12,10 @@
 <table>
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.userName)
+            @Html.DisplayNameFor(model => model.userSender)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.userRecipient)
         </th>
         <th></th>
     </tr>
@@ -20,16 +23,19 @@
 @foreach (var item in Model) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.userName)
+            @Html.DisplayFor(modelItem => item.userSender)
         </td>
         <td>
-            @Html.ActionLink("Enviar Mensaje", "NuevoMensaje", "User", new { receptor = item.userFriend, emisor = item.userName }, null) |
+            @Html.DisplayFor(modelItem => item.userRecipient)
+        </td>
+        <td>
+            @Html.ActionLink("Enviar Mensaje", "NuevoMensaje", "User", new { receptor = item.userRecipient, emisor = item.userSender }, null) |
             @Html.ActionLink("Enviar Documento", "EnviarArchivo", "User", new { /* id=item.PrimaryKey */ }, null) |
             @Html.ActionLink("Ver Documentos", "ObtenerArchivo", "User", new { /* id=item.PrimaryKey */ }, null) |
-            @Html.ActionLink("Ver Mensajes", "ObtenerMensajes", "User", new {/* id=item.PrimaryKey */ }, null) |
+            @Html.ActionLink("Ver Mensajes", "ObtenerMensajes", "User", new { receptor = item.userRecipient, emisor = item.userSender }, null) |
             @Html.ActionLink("Buscar Mensaje", "BuscarMensaje", "User", new { /* id=item.PrimaryKey */ }, null) |
             @Html.ActionLink("Vaciar Chat", "VaciarChat", "User", new { /* id=item.PrimaryKey */ }, null) |
-            @Html.ActionLink("Eliminar Chat", "EliminarChat", "User", new { receptor = item.userFriend, emisor = item.userName }, null)
+            @Html.ActionLink("Eliminar Chat", "EliminarChat", "User", new { receptor = item.userRecipient, emisor = item.userRecipient }, null)
         </td>
     </tr>
 }
